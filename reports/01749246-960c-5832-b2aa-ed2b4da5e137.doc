@@ -1,0 +1,7 @@
+{0  G-044324 01749246-960c-5832-b2aa-ed2b4da5e137 cold2282a_LTempAir_Al_HH Высокая температура  alarm 100 LOCAL cold2282a_left_status.TempAir_Al_HH   0 0}
+{0  G-044324 01749246-960c-5832-b2aa-ed2b4da5e137 cold2282a_LCold_Status Охлаждение  working 100 LOCAL cold2282a_left_status.Cold_Status   0 0}
+{0  G-044324 01749246-960c-5832-b2aa-ed2b4da5e137 cold2282a_LVentSK_status Вентилятор  working 100 LOCAL cold2282a_left_status.VentSK_status   0 0}
+{0  G-044324 01749246-960c-5832-b2aa-ed2b4da5e137 cold2282a_LDefrost_status Разморозка  waiting 100 LOCAL cold2282a_left_status.Defrost_status   0 0}
+{0  G-044324 01749246-960c-5832-b2aa-ed2b4da5e137 cold2282a_RTempAir_Al_HH Высокая температура  alarm 100 LOCAL cold2282a_right_status.TempAir_Al_HH   0 0}
+{0  G-044324 01749246-960c-5832-b2aa-ed2b4da5e137 cold2282a_RCold_Status Охлаждение  working 100 LOCAL cold2282a_right_status.Cold_Status   0 0}
+{0  G-044324 01749246-960c-5832-b2aa-ed2b4da5e137 cold2282a_RVentSK_status Вентилятор  working 100 LOCAL cold2282a_right_status.VentSK_status   0 0}

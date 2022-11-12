@@ -1,0 +1,4 @@
+{0  G-044325 01749246-9617-585e-9e19-157ccad61ee2 cold78_Defrost_status Разморозка  waiting 100 LOCAL cold78_status.Defrost_status   0 0}
+{0  G-044325 01749246-9617-585e-9e19-157ccad61ee2 cold78_VentSK_status Вентилятор  working 100 LOCAL cold78_status.VentSK_status   0 0}
+{0  G-044325 01749246-9617-585e-9e19-157ccad61ee2 cold78_ComprSK_status Компрессор  working 100 LOCAL cold78_status.ComprSK_status   0 0}
+{0  G-044325 01749246-9617-585e-9e19-157ccad61ee2 cold78_Temp_Al_HH Высокая температура  alarm 100 LOCAL cold78_status.Temp_Al_HH   0 0}
