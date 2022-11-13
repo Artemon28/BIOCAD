@@ -33,8 +33,6 @@ func (h *Handler) GetDevices(c *gin.Context) {
 }
 
 func GeneratePaginationFromRequest(c *gin.Context) (string, structures.Pagination) {
-	// Initializing default
-	//	var mode string
 	limit := 2
 	page := 1
 	guid := ""

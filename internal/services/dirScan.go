@@ -3,12 +3,15 @@ package services
 import (
 	"BIOCAD/internal/repository"
 	"BIOCAD/internal/structures"
+	"encoding/csv"
 	"fmt"
-	"github.com/dogenzaka/tsv"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
+	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -45,8 +48,8 @@ func (sd *ScanDirectoryService) Scan(dirName string, duration time.Duration) {
 			log.Fatal(err)
 		}
 
-		unitGuidChan := make(chan structures.Device, 100)
 		for _, file := range files {
+			unitGuidChan := make(chan structures.Device, 100)
 			if strings.HasSuffix(file.Name(), ".tsv") {
 				if isNew(checkedFiles, file.Name()) {
 					go sd.ReadFile(dirName, file.Name(), unitGuidChan)
@@ -73,35 +76,68 @@ func (sd *ScanDirectoryService) ReadFile(dirName, fileName string, unitGuidChan 
 	defer file.Close()
 
 	data := structures.Device{}
-	parser, _ := tsv.NewParser(file, &data)
+	tsvReader := csv.NewReader(file)
+	tsvReader.Comma = '\t'
+	tsvReader.Read() //read header
 
 	for {
-		eof, err := parser.Next()
-		if eof {
-			return
+		rec, err := tsvReader.Read()
+		if err == io.EOF {
+			break
 		}
+		if len(rec) == 0 {
+			log.Println("empty row in file")
+			continue
+		}
+		data = convertRecord(rec)
 		if err != nil {
-			return
+			log.Println(err.Error())
+			continue
 		}
 		if data.UnitGuid == "" {
-			return
+			log.Println("Can't recognise this device: " + fmt.Sprintf("%v", data) + " guid is nil")
+			continue
 		}
 		data.Id = 0
 		_, err = sd.r.AddDevice(data)
 		if err != nil {
 			log.Println(err.Error())
-			return
+			continue
 		}
 		unitGuidChan <- data
 	}
+}
+
+func convertRecord(rec []string) structures.Device {
+	var dev structures.Device
+	if len(rec) > reflect.ValueOf(dev).NumField() {
+		rec = rec[:reflect.ValueOf(dev).NumField()]
+	}
+	for len(rec) < reflect.ValueOf(dev).NumField() {
+		rec = append(rec, "")
+	}
+	dev.Mqtt = rec[1]
+	dev.Invid = rec[2]
+	dev.UnitGuid = rec[3]
+	dev.MsgId = rec[4]
+	dev.Text = rec[5]
+	dev.Context = rec[6]
+	dev.Class = rec[7]
+	dev.Level, _ = strconv.Atoi(rec[8])
+	dev.Area = rec[9]
+	dev.Addr = rec[10]
+	dev.Block = rec[11]
+	dev.Type = rec[12]
+	dev.Bit, _ = strconv.Atoi(rec[13])
+	dev.InvertBit, _ = strconv.Atoi(rec[14])
+	dev.Id = 0
+	return dev
 }
 
 func (sd *ScanDirectoryService) MakeReports(unitGuidChan chan structures.Device) {
 	if _, err := os.Stat(REPORT_DIRECTORY); os.IsNotExist(err) {
 		os.Mkdir(REPORT_DIRECTORY, 755)
 	}
-	os.Chdir(REPORT_DIRECTORY)
-	defer os.Chdir("..")
 	var wg sync.WaitGroup
 	for {
 		i, ok := <-unitGuidChan
@@ -117,7 +153,7 @@ func (sd *ScanDirectoryService) MakeReports(unitGuidChan chan structures.Device)
 func (sd *ScanDirectoryService) MakeReportFile(device structures.Device, wg *sync.WaitGroup) {
 	defer wg.Done()
 	var file *os.File
-	file, _ = os.OpenFile(device.UnitGuid+".doc", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	file, _ = os.OpenFile(path.Join(REPORT_DIRECTORY, device.UnitGuid+".doc"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	defer file.Close()
 	_, err := file.WriteString(fmt.Sprintf("%v\n", device))
 	if err != nil {
