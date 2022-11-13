@@ -42,13 +42,10 @@ func GeneratePaginationFromRequest(c *gin.Context) (string, structures.Paginatio
 		switch key {
 		case "limit":
 			limit, _ = strconv.Atoi(queryValue)
-			break
 		case "page":
 			page, _ = strconv.Atoi(queryValue)
-			break
 		case "unit_guid":
 			guid = queryValue
-			break
 		}
 	}
 	return guid, structures.Pagination{

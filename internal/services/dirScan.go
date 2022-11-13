@@ -78,7 +78,10 @@ func (sd *ScanDirectoryService) ReadFile(dirName, fileName string, unitGuidChan 
 	data := structures.Device{}
 	tsvReader := csv.NewReader(file)
 	tsvReader.Comma = '\t'
-	tsvReader.Read() //read header
+	_, err = tsvReader.Read()
+	if err != nil {
+		log.Println(err.Error())
+	} //read header
 
 	for {
 		rec, err := tsvReader.Read()
@@ -136,7 +139,11 @@ func convertRecord(rec []string) structures.Device {
 
 func (sd *ScanDirectoryService) MakeReports(unitGuidChan chan structures.Device) {
 	if _, err := os.Stat(REPORT_DIRECTORY); os.IsNotExist(err) {
-		os.Mkdir(REPORT_DIRECTORY, 755)
+		err := os.Mkdir(REPORT_DIRECTORY, 0755)
+		if err != nil {
+			log.Println(err.Error())
+			return
+		}
 	}
 	var wg sync.WaitGroup
 	for {
