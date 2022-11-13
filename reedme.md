@@ -1,2 +1,0 @@
-Для запуска необходимо скачать репозиторий и передать параметры подключения к базе данных и путь до директории
-go run main.go -host=localhost -port=5432 -username=postgres -dbname=biocad -password=xxxx -dirAddress=xxxx
